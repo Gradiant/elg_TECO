@@ -1,0 +1,15 @@
+# Created by .ignore support plugin (hsz.mobi)
+### Example user template template
+### Example user template
+
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+models_db/bert_pretrained_models/multi_cased_L-12_H-768_A-12
+models_db/we_models/*.model
+models_db/we_models/*.npy
+models_db/we_models/*.zip
+requirements.txt
+server.py
