@@ -37,6 +37,9 @@ def predict_json():
         output = make_request_teco(content)
         return output
     except Exception as e:
+        import traceback
+        traceback.print_exc()
+        print(e)
         return generate_failure_response(
             status=404,
             code="elg.service.internalError",

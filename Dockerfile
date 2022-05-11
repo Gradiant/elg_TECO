@@ -1,28 +1,40 @@
-FROM python:3.7-slim
+FROM ubuntu:18.04
 
-RUN addgroup --gid 1001 "elg" && \
-      adduser --disabled-password --gecos "ELG User,,," \
-      --home /elg --ingroup elg --uid 1001 elg && \
-      mkdir /elg/workdir && \
-      chmod -R +x /elg/
+# RUN apt-get update -y \
+# 	&& apt-get install -y python3-pip python3-dev
+# RUN pip3 install --upgrade pip
 
-# Copy in our app, its requirements file and the entrypoint script
-#COPY --chown=elg:elg serve.py docker-entrypoint.sh /elg/
-COPY --chown=elg:elg ./ /elg/
-RUN chmod +x /elg/docker-entrypoint.sh && \
-    chmod +x /elg/serve.py && chmod -R +x /elg/
+# Upgrade installed packages
+RUN apt-get update && apt-get upgrade -y && apt-get clean
 
-# Everything from here down runs as the unprivileged user account
-USER elg:elg
+# (...)
+
+# Python package management and basic dependencies
+RUN apt-get install -y curl python3.7 python3.7-dev python3.7-distutils
+
+# Register the version in alternatives
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
+
+# Set python 3 as the default python
+RUN update-alternatives --set python /usr/bin/python3.7
+
+# Upgrade pip to latest version
+RUN curl -s https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
+    python get-pip.py --force-reinstall && \
+    rm get-pip.py
+
+ENV LANG="C.UTF-8" \
+    LC_ALL="C.UTF-8"
+
+COPY ./ /
+
 EXPOSE 8866
-WORKDIR /elg/
+RUN pip3 install -r requirements.txt
+RUN /usr/bin/python3.7 -m nltk.downloader floresta
+#RUN sed -i "s/% len(self._regexps)/% len(self._regexs)/g" /usr/local/lib/python3.7/dist-packages/nltk/tag/sequential.py
 
-# Create a Python virtual environment for the dependencies
-RUN python -mvenv venv && \
-	/elg/venv/bin/python -m pip install --upgrade pip && \
-	venv/bin/pip --no-cache-dir install -r requirements.txt
-	#flask==2.0.2 flask_json==0.3.4 transformers==4.12.0 numpy==1.21.3 scipy==1.6.1 torch==1.10.0
-RUN /elg/venv/bin/python -m nltk.downloader floresta
+RUN sed -i "s/for regexp, tag in self._regexps/for regexp, tag in self._regexs/g" /usr/local/lib/python3.7/dist-packages/nltk/tag/sequential.py
+RUN sed -i "s/len(self._regexps)/len(self._regexs)/g" /usr/local/lib/python3.7/dist-packages/nltk/tag/sequential.py
 
-ENV WORKERS=1
-CMD ["/elg/venv/bin/python", "serve.py"]
+
+CMD ["/usr/bin/python3.7", "serve.py"]
