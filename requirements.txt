@@ -1,0 +1,11 @@
+gensim==3.0.0
+scikit-learn
+pandas
+tweepy
+NLPyPort
+# nltk.download('floresta')
+bert-serving-client
+bert-serving-server
+tensorflow==1.15.0
+flask==2.0.2
+flask_json==0.3.4

@@ -1,5 +1,5 @@
 import logging as log
-import pickle
+from pickle5 import pickle
 import csv
 
 #from newsapi.newsapi_client import NewsApiClient

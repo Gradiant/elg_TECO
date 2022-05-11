@@ -1,6 +1,32 @@
 # TECo - Texto Em Contexto (Text in Context)
 This system aims to, given a short-text input, adapt and select Portuguese expressions (e.g., proverbs and movie titles) in order to approximate them to the input, enhancing relatedness, originality and, possibly, funniness.
 
+## Install
+### Download & Install models
+Files needed to put in folder 'models_db':
+- To put in folder 'bert_pretrained_models', download <a href="https://github.com/google-research/bert">BERT MultiLingual Cased 'multi_cased_L-12_H-768_A-12'</a>
+- To put in folder 'we_models', downloadable <a href="https://drive.google.com/drive/folders/1oCVCjoAED2DErrVCuk3yi0MFVvX3BO02?usp=sharing">here</a>
+
+```
+sh docker-build.sh
+```
+
+## Execute
+```
+docker run --rm -p 0.0.0.0:8866:8866 --name teco elg_teco:1.0
+```
+## Use
+
+```
+curl -X POST  http://0.0.0.0:8866/predict_json -H 'Content-Type: application/json' -d '{"type": "text", "content":"Mourinho culpa-me por ter sido demitido do Chelsea. Esteve sempre contra mim"}'
+```
+
+
+# Original Readme
+
+
+
+
 # Download & Install
 Files needed to put in folder 'models_db':
 - To put in folder 'bert_pretrained_models', download <a href="https://github.com/google-research/bert">BERT MultiLingual Cased 'multi_cased_L-12_H-768_A-12'</a>
