@@ -76,6 +76,14 @@ def make_request_teco(text):
     if generated:
         print(headline, "->", generated[1])
         return prepare_output_format(generated)
+    else:
+        return generate_failure_response(
+            status=404,
+            code="elg.service.internalError",
+            text=None,
+            params=None,
+            detail=None,
+        )
 
 
 def prepare_output_format(prediction):
