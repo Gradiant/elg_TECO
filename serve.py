@@ -74,7 +74,6 @@ def make_request_teco(text):
         config["gen_method"],
     )
     if generated:
-        print(headline, "->", generated[1])
         return prepare_output_format(generated)
     else:
         return generate_failure_response(
@@ -88,8 +87,7 @@ def make_request_teco(text):
 
 def prepare_output_format(prediction):
     list_options = list()
-    list_options.append({"content": prediction[1], "score": prediction[2]})
-
+    list_options.append({"content": prediction[1], "score": round(prediction[2][0], 3)})
     return {"response": {"type": "texts", "texts": list_options}}
 
 

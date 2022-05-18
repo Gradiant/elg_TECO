@@ -7,6 +7,10 @@ Files needed to put in folder 'models_db':
 - To put in folder 'bert_pretrained_models', download <a href="https://github.com/google-research/bert">BERT MultiLingual Cased 'multi_cased_L-12_H-768_A-12'</a>
 - To put in folder 'we_models', downloadable <a href="https://drive.google.com/drive/folders/1oCVCjoAED2DErrVCuk3yi0MFVvX3BO02?usp=sharing">here</a>
 
+### Modify files from original repository
+Change the following line in proverb_selector/file_manager.py `import pickle` by `from pickle5 import pickle`
+## Build docker image
+
 ```
 sh docker-build.sh
 ```
@@ -22,53 +26,25 @@ curl -X POST  http://0.0.0.0:8866/predict_json -H 'Content-Type: application/jso
 ```
 
 
-# Original Readme
+
+# Test
+In the folder `test` you have the files for testing the API according to the ELG specifications.
+It uses an API that acts as a proxy with your dockerized API that checks both the requests and the responses.
+For this follow the instructions:
+1) Configure the .env file with the data of the image and your API
+2) Launch the test: `docker-compose up`
+3) Make the requests, instead of to your API's endpoint, to the test's endpoint:
+   ```
+   curl -X POST  http://0.0.0.0:8866/processText/service -H 'Content-Type: application/json' -d '{"type": "text", "content":"Mourinho culpa-me por ter sido demitido do Chelsea. Esteve sempre contra mim"}'
+   ```
+4) If your request and the API's response is compliance with the ELG API, you will receive the response.
+   1) If the request is incorrect: Probably you will don't have a response and the test tool will not show any message in logs.
+   2) If the response is incorrect: You will see in the logs that the request is proxied to your API, that it answers, but the test tool does not accept that response. You must analyze the logs.
 
 
-
-
-# Download & Install
-Files needed to put in folder 'models_db':
-- To put in folder 'bert_pretrained_models', download <a href="https://github.com/google-research/bert">BERT MultiLingual Cased 'multi_cased_L-12_H-768_A-12'</a>
-- To put in folder 'we_models', downloadable <a href="https://drive.google.com/drive/folders/1oCVCjoAED2DErrVCuk3yi0MFVvX3BO02?usp=sharing">here</a>
-
-# Configuration
-Under 'teco_config', the configuration file is 'config.properties', where besides the paths to the models, there are also options for running TECo:
-- Adaptation methods and their order, split by commas: VecDiff, Analogy, Subs
-- Amount of expressions to be selected from the corpus, for adaptation
-- Final Selection Method: TF-IDF, BERT
-- Interval between tweets, in seconds. Useful if trying to run the twitter-bot.
-
-# Running TECo
-- Run 'bert_server_run.py' (only if BERT is required)
-- Run 'teco_main.py'
-
-# Additional information
-- TECo is described in two research papers:
-
-<i>TECo: Exploring Word Embeddings for Text Adaptation to a given Context</i>, included in the proceedings of the  <a href="http://computationalcreativity.net/iccc20/papers/ICCC20_Proceedings.pdf">11th International Conference on Computational Creativity</a>, which can be cited as follows:
-<pre>
-@inproceedings{mendes_goncalooliveira:iccc2020b,
-	author = {Rui Mendes and Hugo {Gon{\c c}alo Oliveira}},
-	booktitle = {Proceedings of the 11th International Conference on Computational Creativity, September 7-11, 2020, Coimbra},
-	pages = {185--188},
-	publisher = {ACC},
-	series = {ICCC 2020},
-	title = {TECo: Exploring Word Embeddings for Text Adaptation to a given Context},
-	year = {2020}}
-</pre>
-
-<i>Amplifying the Range of News Stories with Creativity: Methods and their Evaluation, in Portuguese</i>, included in the proceedings of the <a href="https://www.aclweb.org/anthology/2020.inlg-1.32/">13th International Conference on Natural Language Generation</a>, which can be cited as follows:
-<pre>
-@inproceedings{mendes-goncalo-oliveira-2020-amplifying,
-    title = "Amplifying the Range of News Stories with Creativity: Methods and their Evaluation, in {P}ortuguese",
-    author = "Mendes, Rui and Gon{\c{c}}alo Oliveira, Hugo",
-    booktitle = "Proceedings of the 13th International Conference on Natural Language Generation",
-    month = dec,
-    year = "2020",
-    address = "Dublin, Ireland",
-    publisher = "Association for Computational Linguistics",
-    url = "https://www.aclweb.org/anthology/2020.inlg-1.32",
-    pages = "252--262",
-}
-</pre>
+    
+## Citations:
+The original work of this tool is:
+- Mendes, R., & Oliveira, H. G. (2020). TECo: Exploring Word Embeddings for Text Adaptation to a given Context. In ICCC (pp. 185-188).
+- Mendes, R., & Oliveira, H. G. (2020, December). Amplifying the Range of News Stories with Creativity: Methods and their Evaluation, in Portuguese. In Proceedings of the 13th International Conference on Natural Language Generation (pp. 252-262).
+- https://github.com/NLP-CISUC/TECo
