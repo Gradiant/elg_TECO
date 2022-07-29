@@ -22,7 +22,7 @@ docker run --rm -p 0.0.0.0:8866:8866 --name teco elg_teco:1.0
 ## Use
 
 ```
-curl -X POST  http://0.0.0.0:8866/predict_json -H 'Content-Type: application/json' -d '{"type": "text", "content":"Mourinho culpa-me por ter sido demitido do Chelsea. Esteve sempre contra mim"}'
+curl -X POST  http://0.0.0.0:8866/predict_json -H 'Content-Type: application/json' -d '{"type": "text", "content":"Bancos dizem que as condiçoes das linhas de crédito foram definidas pelo governo"}'
 ```
 
 
