@@ -1,3 +1,4 @@
+import json
 from flask import Flask, request
 from flask_json import FlaskJSON, JsonError, as_json
 from werkzeug.utils import secure_filename
@@ -11,28 +12,35 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 APP_ROOT = "./"
 app.config["APPLICATION_ROOT"] = APP_ROOT
 app.config["UPLOAD_FOLDER"] = "files/"
+app.config["JSON_ADD_STATUS"] = False
+app.config["JSON_SORT_KEYS"] = False
 
 json_app = FlaskJSON(app)
 
 config = {}
-
-"""
-@app.before_first_request
-def before_first_request():
-    app.logger.info("before_first_request")
-    load_config()
-"""
-
 
 @as_json
 @app.route("/predict_json", methods=["POST"])
 def predict_json():
 
     data = request.get_json()
-    if (data.get("type") != "text") or ("content" not in data):
-        output = invalid_request_error(None)
-        return output
-    content = data["content"]
+    if data["type"] != "text":
+        # Standard message code for unsupported response type
+        return generate_failure_response(
+            status=400,
+            code="elg.request.type.unsupported",
+            text="Request type {0} not supported by this service",
+            params=[data["type"]],
+            detail=None,
+        )
+
+    if "content" not in data:
+        return invalid_request_error(
+            None,
+        )
+
+    content = data.get("content")
+
     try:
         output = make_request_teco(content)
         return output
@@ -76,19 +84,26 @@ def make_request_teco(text):
     if generated:
         return prepare_output_format(generated)
     else:
-        return generate_failure_response(
-            status=404,
-            code="elg.service.internalError",
-            text=None,
-            params=None,
-            detail=None,
+        text = (
+            "Unexpected error. If your input text is too long, this may be the cause."
         )
+        # Standard message for internal error - the real error message goes in params
+        return generate_failure_response(
+            status=500,
+            code="elg.service.internalError",
+            text="Internal error during processing: {0}",
+            params=[text],
+            detail="",
+        )
+
 
 
 def prepare_output_format(prediction):
     list_options = list()
     list_options.append({"content": prediction[1], "score": round(prediction[2][0], 3)})
-    return {"response": {"type": "texts", "texts": list_options}}
+    response = {"response": {"type": "texts", "texts": list_options}}
+    response = json.loads(json.dumps(response, ensure_ascii=True))
+    return response
 
 
 def generate_failure_response(status, code, text, params, detail):
